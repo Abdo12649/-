@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>متجري الإلكتروني</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;font-family:Arial,sans-serif;background:#f5f6fa;color:#222}
+header{background:#123c32;color:white;padding:22px 15px;text-align:center}
+header h1{margin:0 0 8px}
+header p{margin:0}
+.hero{background:#d9f4e5;text-align:center;padding:25px 12px}
+.hero h2{color:#123c32}
+button{border:0;padding:12px 16px;border-radius:8px;cursor:pointer;font-size:15px}
+.products{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;padding:14px}
+.card{background:white;border-radius:12px;padding:10px;text-align:center;box-shadow:0 2px 8px #ddd}
+.card img{width:100%;height:125px;object-fit:cover;border-radius:8px}
+.card h3{font-size:16px}
+.price{color:#13834b;font-weight:bold}
+.add{background:#123c32;color:white;width:100%}
+.cart{margin:14px;padding:16px;background:white;border-radius:12px}
+.order{background:#159447;color:white;width:100%;margin-top:10px}
+footer{text-align:center;background:#123c32;color:white;padding:18px}
+input{width:100%;padding:12px;margin:6px 0;border:1px solid #ccc;border-radius:8px}
+@media(min-width:650px){.products{grid-template-columns:repeat(4,1fr)}}
+</style>
+</head>
+<body>
+
+<header>
+<h1>🛍️ متجري الإلكتروني</h1>
+<p>أهلاً بك! اكتشف منتجاتنا</p>
+</header>
+
+<section class="hero">
+<h2>تسوّق بسهولة وأمان</h2>
+<p>اختر منتجاتك وأرسل طلبك مباشرة</p>
+<button onclick="document.getElementById('products').scrollIntoView()">تسوّق الآن ↓</button>
+</section>
+
+<h2 style="text-align:center">✨ منتجاتنا</h2>
+<div class="products" id="products"></div>
+
+<section class="cart">
+<h2>🛒 سلة المشتريات</h2>
+<div id="cart">السلة فارغة</div>
+<p>المجموع: <strong id="total">0 دج</strong></p>
+<h3>معلومات الزبون</h3>
+<input id="customer" placeholder="الاسم الكامل">
+<input id="phone" type="tel" placeholder="رقم الهاتف">
+<input id="address" placeholder="عنوان التوصيل">
+<button class="order" onclick="sendOrder()">إرسال الطلب عبر واتساب</button>
+</section>
+
+<footer>
+<p>متجري الإلكتروني © 2026</p>
+<p>شكراً لزيارتكم ❤️</p>
+</footer>
+
+<script>
+const products=[
+{id:1,name:"ساعة أنيقة",price:2500,emoji:"⌚",color:"dbeafe"},
+{id:2,name:"حقيبة عصرية",price:3500,emoji:"👜",color:"fce7f3"},
+{id:3,name:"سماعات لاسلكية",price:2200,emoji:"🎧",color:"ede9fe"},
+{id:4,name:"حذاء رياضي",price:4500,emoji:"👟",color:"dcfce7"}
+];
+let cart=[];
+
+function renderProducts(){
+document.getElementById("products").innerHTML=products.map(p=>`
+<div class="card">
+<div style="height:125px;background:#${p.color};display:grid;place-items:center;border-radius:8px;font-size:65px">${p.emoji}</div>
+<h3>${p.name}</h3>
+<p class="price">${p.price.toLocaleString("fr-DZ")} دج</p>
+<button class="add" onclick="add(${p.id})">أضف إلى السلة +</button>
+</div>`).join("");
+}
+
+function add(id){
+const p=products.find(x=>x.id===id);
+cart.push(p);
+renderCart();
+}
+
+function renderCart(){
+const el=document.getElementById("cart");
+el.innerHTML=cart.length?cart.map((p,i)=>
+`<p>${p.name} — ${p.price} دج <button onclick="removeItem(${i})">حذف</button></p>`
+).join(""):"السلة فارغة";
+document.getElementById("total").textContent=
+cart.reduce((s,p)=>s+p.price,0).toLocaleString("fr-DZ")+" دج";
+}
+
+function removeItem(i){cart.splice(i,1);renderCart();}
+
+function sendOrder(){
+if(!cart.length){alert("أضف منتجاً إلى السلة أولاً");return;}
+const name=document.getElementById("customer").value.trim();
+const phone=document.getElementById("phone").value.trim();
+const address=document.getElementById("address").value.trim();
+if(!name||!phone||!address){alert("يرجى ملء الاسم ورقم الهاتف والعنوان");return;}
+
+/* استبدل الرقم أدناه برقم واتساب المتجر بصيغة دولية دون + */
+const whatsapp="213XXXXXXXXX";
+if(whatsapp.includes("X")){
+alert("المتجر تجريبي. يجب إضافة رقم واتساب صاحب المتجر في الكود قبل استقبال الطلبات.");
+return;
+}
+const items=cart.map(p=>p.name+" - "+p.price+" دج").join("\n");
+const total=cart.reduce((s,p)=>s+p.price,0);
+const msg=`طلب جديد\nالاسم: ${name}\nالهاتف: ${phone}\nالعنوان: ${address}\nالمنتجات:\n${items}\nالمجموع: ${total} دج`;
+window.open("https://wa.me/"+whatsapp+"?text="+encodeURIComponent(msg),"_blank");
+}
+renderProducts();
+</script>
+</body>
+  </html>
